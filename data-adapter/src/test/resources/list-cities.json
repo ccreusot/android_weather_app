@@ -1,0 +1,23 @@
+{
+    "0": {
+        "name": "Aaigem",
+        "npa": "9420",
+        "region": "",
+        "country": "BEL",
+        "url": "aaigem"
+    },
+    "1": {
+        "name": "Aalbeke",
+        "npa": "8511",
+        "region": "",
+        "country": "BEL",
+        "url": "aalbeke"
+    },
+    "2": {
+        "name": "Aalst",
+        "npa": "9300",
+        "region": "",
+        "country": "BEL",
+        "url": "aalst"
+    }
+}
