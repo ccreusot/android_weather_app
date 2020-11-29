@@ -1,18 +1,16 @@
 package fr.cedriccreusot.domain.usecases
 
 import fr.cedriccreusot.domain.models.City
-import fr.cedriccreusot.domain.models.Error
-import fr.cedriccreusot.domain.models.Success
 import org.amshove.kluent.`should be equal to`
 import org.junit.Test
 
-class SearchCityFromListTest {
+class SearchCityFromListUseCaseTest {
 
     @Test
-    fun `we search for a city that doesn't exist, we should retrieve an error`() {
-        val useCase = SearchCityFromList()
+    fun `we search for a city that doesn't exist, we should retrieve an empty list`() {
+        val useCase = SearchCityFromListUseCase()
         val cities = listOf<City>()
-        val expected = Error<List<City>>("Not found")
+        val expected = emptyList<City>()
 
         val result = useCase("Unknown", cities)
 
@@ -21,7 +19,7 @@ class SearchCityFromListTest {
 
     @Test
     fun `Search city is empty we should get all the cities`() {
-        val useCase = SearchCityFromList()
+        val useCase = SearchCityFromListUseCase()
         val cities = listOf(
             City(name = "Paris", null, null, null, "paris"),
             City(name = "Bordeaux", null, null, null, "bordeaux"),
@@ -30,9 +28,7 @@ class SearchCityFromListTest {
             City(name = "Metz", null, null, null, "Metz"),
         )
 
-        val expected = Success(
-            cities
-        )
+        val expected = cities
 
         val result = useCase("", cities)
 
@@ -41,7 +37,7 @@ class SearchCityFromListTest {
 
     @Test
     fun `We're searching few letter, we should retrieve a list corresponding to those first letter`() {
-        val useCase = SearchCityFromList()
+        val useCase = SearchCityFromListUseCase()
         val cities = listOf(
             City(name = "Paris", null, null, null, "paris"),
             City(name = "Bordeaux", null, null, null, "bordeaux"),
@@ -50,12 +46,11 @@ class SearchCityFromListTest {
             City(name = "Metz", null, null, null, "Metz"),
         )
 
-        val expected = Success(
+        val expected =
             listOf(
                 City(name = "Montpellier", null, null, null, "montpellier"),
                 City(name = "Metz", null, null, null, "Metz"),
             )
-        )
 
         val result = useCase("M", cities)
 
