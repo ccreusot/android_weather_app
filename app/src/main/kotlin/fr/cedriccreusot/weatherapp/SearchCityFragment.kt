@@ -11,14 +11,17 @@ import dagger.hilt.android.AndroidEntryPoint
 import fr.cedriccreusot.weatherapp.adapters.CitiesAdapter
 import fr.cedriccreusot.weatherapp.databinding.FragmentSearchCityBinding
 import fr.cedriccreusot.weatherapp.viewmodels.SearchCityViewModel
+import kotlinx.coroutines.FlowPreview
 import java.lang.ref.WeakReference
 
 @AndroidEntryPoint
 class SearchCityFragment : Fragment() {
     private lateinit var binding: WeakReference<FragmentSearchCityBinding>
 
+    @FlowPreview
     private val searchCityViewModel: SearchCityViewModel by viewModels()
 
+    @FlowPreview
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -31,7 +34,7 @@ class SearchCityFragment : Fragment() {
                 searchCityViewModel.search(it.toString())
             }
 
-            searchCityViewModel.cities().observe(requireActivity()) {
+            searchCityViewModel.cities.observe(requireActivity()) {
                 cityList.scrollToPosition(0)
                 cityList.adapter = CitiesAdapter { selectedItem ->
 
