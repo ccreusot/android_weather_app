@@ -10,18 +10,25 @@ import fr.cedriccreusot.weatherapp.databinding.ItemCityBinding
 
 typealias OnSelectItem = (item: City) -> Unit
 
-class CitiesAdapter(onSelectItem: OnSelectItem) : ListAdapter<City, CityViewHolder>(object :
-    DiffUtil.ItemCallback<City>() {
-    override fun areItemsTheSame(oldItem: City, newItem: City): Boolean {
-        return oldItem === newItem
-    }
+class CitiesAdapter(private val onSelectItem: OnSelectItem? = null) :
+    ListAdapter<City, CityViewHolder>(object :
+        DiffUtil.ItemCallback<City>() {
+        override fun areItemsTheSame(oldItem: City, newItem: City): Boolean {
+            return oldItem === newItem
+        }
 
-    override fun areContentsTheSame(oldItem: City, newItem: City): Boolean {
-        return oldItem == newItem
-    }
-}) {
+        override fun areContentsTheSame(oldItem: City, newItem: City): Boolean {
+            return oldItem == newItem
+        }
+    }) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityViewHolder {
-        return CityViewHolder(ItemCityBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        return CityViewHolder(
+            ItemCityBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            ), onSelectItem
+        )
     }
 
     override fun onBindViewHolder(holder: CityViewHolder, position: Int) {
@@ -29,9 +36,15 @@ class CitiesAdapter(onSelectItem: OnSelectItem) : ListAdapter<City, CityViewHold
     }
 }
 
-class CityViewHolder(private val binding: ItemCityBinding) : RecyclerView.ViewHolder(binding.root) {
+class CityViewHolder(
+    private val binding: ItemCityBinding,
+    private val onSelectItem: OnSelectItem?
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(city: City) {
         with(binding) {
+            root.setOnClickListener {
+                onSelectItem?.invoke(city)
+            }
             cityName.text = city.name
             countryFlag.text = when (city.countryCode) {
                 "BEL" -> "\uD83C\uDDE7\uD83C\uDDEA"

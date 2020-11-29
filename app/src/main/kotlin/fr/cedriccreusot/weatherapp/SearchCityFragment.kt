@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import fr.cedriccreusot.weatherapp.adapters.CitiesAdapter
 import fr.cedriccreusot.weatherapp.databinding.FragmentSearchCityBinding
@@ -28,16 +29,18 @@ class SearchCityFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = WeakReference(FragmentSearchCityBinding.inflate(inflater))
-
         binding.get()?.run {
             searchInput.addTextChangedListener {
                 searchCityViewModel.search(it.toString())
             }
 
+            cityList.adapter = CitiesAdapter()
+
             searchCityViewModel.cities.observe(requireActivity()) {
                 cityList.scrollToPosition(0)
-                cityList.adapter = CitiesAdapter { selectedItem ->
-
+                cityList.adapter = CitiesAdapter { selectedCity ->
+                    searchCityViewModel.saveCity(selectedCity)
+                    findNavController().navigateUp()
                 }.apply {
                     submitList(it)
                 }
