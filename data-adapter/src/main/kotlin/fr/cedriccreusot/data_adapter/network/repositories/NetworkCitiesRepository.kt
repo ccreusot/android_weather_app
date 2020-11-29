@@ -1,6 +1,5 @@
 package fr.cedriccreusot.data_adapter.network.repositories
 
-import android.util.Log
 import fr.cedriccreusot.data_adapter.network.WeatherService
 import fr.cedriccreusot.domain.models.City
 import fr.cedriccreusot.domain.models.Error
@@ -23,7 +22,7 @@ class NetworkCitiesRepository(private val service: WeatherService): CitiesReposi
                 )
             })
         }.onFailure {
-            Log.e(javaClass.name, it.stackTraceToString())
+            return Error("Something went wrong")
         }
         return Error("Something went wrong")
     }

@@ -3,15 +3,14 @@ package fr.cedriccreusot.data_adapter.network.repositories
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import fr.cedriccreusot.data_adapter.JsonFileUtils
 import fr.cedriccreusot.data_adapter.WeatherServiceMocks
 import fr.cedriccreusot.data_adapter.models.City
 import fr.cedriccreusot.data_adapter.models.CityJsonAdapter
 import fr.cedriccreusot.domain.models.Error
 import fr.cedriccreusot.domain.models.Success
 import org.amshove.kluent.`should be equal to`
-import org.junit.Assert.*
 import org.junit.Test
-import java.io.File
 
 typealias DomainCity = fr.cedriccreusot.domain.models.City
 
@@ -31,14 +30,11 @@ class NetworkCitiesRepositoryTest {
 
     @Test
     fun `Our repository should return a list of domain city from the webservice response`() {
-        val json = StringBuilder()
-        for (line in File(javaClass.classLoader!!.getResource("list-cities.json").path).readLines()) {
-            json.append(line)
-        }
+        val json = JsonFileUtils.readJsonFile("list-cities.json")
         val type = Types.newParameterizedType(Map::class.java, String::class.java, City::class.java)
         val moshi = Moshi.Builder().build()
         val adapter: JsonAdapter<Map<String, City>> = moshi.newBuilder().add(City::class.java, CityJsonAdapter(moshi)).build().adapter(type)
-        val service = WeatherServiceMocks.createServiceThatSucceed(adapter.fromJson(json.toString()))
+        val service = WeatherServiceMocks.createServiceThatSucceed(adapter.fromJson(json))
 
         val repository = NetworkCitiesRepository(service)
 

@@ -5,5 +5,5 @@ data class City(
     val zipCode: String?,
     val country: String?,
     val countryCode: String?,
-    val uri: String
+    val uri: String?
 )

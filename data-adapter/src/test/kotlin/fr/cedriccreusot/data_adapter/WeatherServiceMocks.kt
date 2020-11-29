@@ -1,6 +1,7 @@
 package fr.cedriccreusot.data_adapter
 
 import fr.cedriccreusot.data_adapter.models.City
+import fr.cedriccreusot.data_adapter.models.Weather
 import fr.cedriccreusot.data_adapter.network.WeatherService
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -22,12 +23,34 @@ object WeatherServiceMocks {
                 return behaviorDelegate.returning(Calls.failure<IOException>(IOException()))
                     .getCities()
             }
+
+            override fun getLocalWeather(latitude: Double, longitude: Double): Call<Weather> {
+                return behaviorDelegate.returning(Calls.failure<IOException>(IOException()))
+                    .getLocalWeather(latitude, longitude)
+            }
+
+            override fun getCityWeather(cityUri: String): Call<Weather> {
+                return behaviorDelegate.returning(Calls.failure<IOException>(IOException()))
+                    .getCityWeather(cityUri)
+            }
         }
 
-    fun createServiceThatSucceed(cities: Map<String, City>? = null): WeatherService =
+    fun createServiceThatSucceed(
+        cities: Map<String, City>? = null,
+        weatherCity: Weather? = null,
+        weatherLocation: Weather? = null
+    ): WeatherService =
         object : WeatherService {
             override fun getCities(): Call<Map<String, City>> {
                 return behaviorDelegate.returningResponse(cities!!).getCities()
+            }
+
+            override fun getLocalWeather(latitude: Double, longitude: Double): Call<Weather> {
+                return behaviorDelegate.returningResponse(weatherLocation).getLocalWeather(latitude, longitude)
+            }
+
+            override fun getCityWeather(cityUri: String): Call<Weather> {
+                return behaviorDelegate.returningResponse(weatherCity).getCityWeather(cityUri)
             }
         }
 }
