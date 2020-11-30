@@ -30,8 +30,8 @@ object WeatherModule {
 
     @Singleton
     @Provides
-    fun provideCitiesRepository(service: WeatherService): CitiesRepository =
-        LocalCitiesRepository(NetworkCitiesRepository(service))
+    fun provideCitiesRepository(@ApplicationContext context: Context, service: WeatherService): CitiesRepository =
+        LocalCitiesRepository(context, NetworkCitiesRepository(service))
 
     @Singleton
     @Provides

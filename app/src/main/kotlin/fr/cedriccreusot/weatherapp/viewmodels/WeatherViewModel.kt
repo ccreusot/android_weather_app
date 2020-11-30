@@ -34,7 +34,6 @@ class WeatherViewModel @ViewModelInject constructor(
 
     fun fetchWeathers() {
         viewModelScope.launch(Dispatchers.IO) {
-            weathersStatus.postValue(Status.LoadingStatus)
             val locationWeather = fetchWeatherLocation()
             val favoriteWeathers = fetchFavoriteLocationWeather()
 
