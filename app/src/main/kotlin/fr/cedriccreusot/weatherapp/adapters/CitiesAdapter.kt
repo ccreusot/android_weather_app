@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import fr.cedriccreusot.domain.models.City
+import fr.cedriccreusot.weatherapp.R
 import fr.cedriccreusot.weatherapp.databinding.ItemCityBinding
 
 typealias OnSelectItem = (item: City) -> Unit
@@ -40,6 +41,8 @@ class CityViewHolder(
     private val binding: ItemCityBinding,
     private val onSelectItem: OnSelectItem?
 ) : RecyclerView.ViewHolder(binding.root) {
+    private val resources get() = itemView.resources
+
     fun bind(city: City) {
         with(binding) {
             root.setOnClickListener {
@@ -47,9 +50,9 @@ class CityViewHolder(
             }
             cityName.text = city.name
             countryFlag.text = when (city.countryCode) {
-                "BEL" -> "\uD83C\uDDE7\uD83C\uDDEA"
-                "FRA" -> "\uD83C\uDDEB\uD83C\uDDF7"
-                "CHE" -> "\uD83C\uDDE8\uD83C\uDDED"
+                "BEL" -> resources.getString(R.string.belgium_flag)
+                "FRA" -> resources.getString(R.string.france_flag)
+                "CHE" -> resources.getString(R.string.swiss_flag)
                 else -> ""
             }
         }

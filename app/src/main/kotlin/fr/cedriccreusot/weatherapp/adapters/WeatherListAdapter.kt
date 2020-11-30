@@ -37,13 +37,17 @@ class WeatherListAdapter : ListAdapter<Weather, WeatherViewHolder>(object :
 }
 
 class WeatherViewHolder(private val binding: ItemWeatherBinding) : RecyclerView.ViewHolder(binding.root) {
+    private val resources get() = itemView.resources
+
     fun bind(weather: Weather) {
         with(binding) {
-            currentTemperature.text = itemView.resources.getString(R.string.temperature, weather.currentTemperature)
-            location.text = itemView.resources.getString(R.string.weather_around_me)
+            currentTemperature.text = resources.getString(R.string.temperature, weather.currentTemperature)
+            location.text = resources.getString(R.string.weather_around_me)
             weather.city?.let {
-                location.text = itemView.resources.getString(R.string.weather_location, weather.city?.name, weather.city?.country)
+                location.text = resources.getString(R.string.weather_location, weather.city?.name, weather.city?.country)
             }
+            temperatureMax.text = resources.getString(R.string.temperature_max, weather.temperatureMax)
+            temperatureMin.text = resources.getString(R.string.temperature_min, weather.temperatureMin)
             iconCondition.load(weather.iconCondition)
         }
     }

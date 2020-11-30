@@ -7,4 +7,9 @@
     <string name="weather_location" formatted="true">%s, %s</string>
     <string name="weather_around_me">Around me</string>
     <string name="location_permission">You need to accept the permission for the weather around you.</string>
+    <string name="temperature_max" formatted="true">T.Max %d˚C</string>
+    <string name="temperature_min" formatted="true">T.Min %d˚C</string>
+    <string name="france_flag">🇫🇷</string>
+    <string name="belgium_flag">🇧🇪</string>
+    <string name="swiss_flag">🇨🇭</string>
 </resources>
