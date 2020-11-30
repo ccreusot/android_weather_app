@@ -16,6 +16,7 @@
             style="@style/TextAppearance.MaterialComponents.Headline4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/guideLine1"
@@ -36,7 +37,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideLine1"
             app:layout_constraintTop_toTopOf="parent"
-            android:gravity="end"
+            android:gravity="end|center_horizontal"
             android:textStyle="bold"
             tools:text="3˚C"/>
 

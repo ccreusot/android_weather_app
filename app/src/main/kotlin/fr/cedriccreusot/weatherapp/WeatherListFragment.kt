@@ -50,4 +50,9 @@ class WeatherListFragment : Fragment() {
 
         return binding.get()?.root
     }
+
+    override fun onStart() {
+        super.onStart()
+        weatherViewModel.fetchWeathers()
+    }
 }

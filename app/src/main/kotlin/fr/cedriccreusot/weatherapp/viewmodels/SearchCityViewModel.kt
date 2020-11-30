@@ -41,7 +41,7 @@ class SearchCityViewModel @ViewModelInject constructor(
     }
 
     fun saveCity(city: City) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             favoriteRepository.saveFavorite(city)
         }
     }

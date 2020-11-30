@@ -1,9 +1,11 @@
 package fr.cedriccreusot.weatherapp
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -41,6 +43,7 @@ class SearchCityFragment : Fragment() {
                 cityList.adapter = CitiesAdapter { selectedCity ->
                     searchCityViewModel.saveCity(selectedCity)
                     findNavController().navigateUp()
+                    closeKeyBoard()
                 }.apply {
                     submitList(it)
                 }
@@ -48,5 +51,12 @@ class SearchCityFragment : Fragment() {
         }
 
         return binding.get()?.root
+    }
+
+    private fun closeKeyBoard() {
+        val manager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        view?.windowToken?.let { token ->
+            manager.hideSoftInputFromWindow(token, 0)
+        }
     }
 }

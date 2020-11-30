@@ -35,8 +35,8 @@ object WeatherModule {
 
     @Singleton
     @Provides
-    fun provideFavoriteLocationRepository(): FavoriteLocationRepository =
-        LocalFavoriteRepository()
+    fun provideFavoriteLocationRepository(@ApplicationContext context: Context): FavoriteLocationRepository =
+        LocalFavoriteRepository(context)
 
     @Singleton
     @Provides
