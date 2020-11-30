@@ -12,11 +12,14 @@ import fr.cedriccreusot.domain.repositories.FavoriteLocationRepository
 import fr.cedriccreusot.domain.repositories.LocationRepository
 import fr.cedriccreusot.domain.repositories.WeatherRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 
 sealed class Status {
     object LoadingStatus : Status()
+    object RequestPermissionStatus : Status()
     data class WeathersStatus(val weathers: List<Weather>) : Status()
 }
 
@@ -27,49 +30,58 @@ class WeatherViewModel @ViewModelInject constructor(
 ) : ViewModel() {
 
     private val weathersStatus: MutableLiveData<Status> by lazy {
+        fetchWeathers()
         MutableLiveData(Status.LoadingStatus)
     }
 
     fun weathers(): LiveData<Status> = weathersStatus
 
-    fun fetchWeathers() {
+    private fun fetchWeathers() {
         viewModelScope.launch(Dispatchers.IO) {
-            val locationWeather = fetchWeatherLocation()
-            val favoriteWeathers = fetchFavoriteLocationWeather()
-
-            weathersStatus.postValue(
-                Status.WeathersStatus(
-                    listOfNotNull(
-                        locationWeather,
-                    ) + favoriteWeathers.requireNoNulls()
-                )
-            )
+            fetchFavoriteLocationWeather()
+                .combine(
+                    fetchWeatherLocation()
+                ) { favoriteWeathers, locationWeather ->
+                    listOfNotNull(locationWeather) + favoriteWeathers
+                }.collect {
+                    weathersStatus.postValue(
+                        Status.WeathersStatus(it)
+                    )
+                }
         }
     }
 
-    private fun fetchWeatherLocation(): Weather? {
-        val weatherResponse = when (val response = locationRepository.getLocation()) {
-            is Success -> weatherRepository.getWeather(response.data)
-            is Error -> Error(response.message)
-        }
-        return when (weatherResponse) {
-            is Success -> {
-                weatherResponse.data
-            }
-            is Error -> null
-        }
-    }
+    private fun fetchWeatherLocation(): Flow<Weather?> {
+        return locationRepository.getLocation()
+            .distinctUntilChanged()
+            .map { locationResponse ->
+                if (locationResponse is Error) {
+                    weathersStatus.postValue(Status.RequestPermissionStatus)
+                    delay(500)
+                    return@map null
+                }
 
-    private fun fetchFavoriteLocationWeather(): List<Weather?> {
-        val favoriteResponse = favoriteRepository.getFavorites()
-        if (favoriteResponse is Success) {
-            return favoriteResponse.data.map {
-                when(val weather = weatherRepository.getWeather(it.cityUri)) {
-                    is Success -> weather.data
+                when (val weatherResponse =
+                    weatherRepository.getWeather((locationResponse as Success).data)) {
+                    is Success -> weatherResponse.data
                     is Error -> null
                 }
             }
-        }
-        return emptyList()
+    }
+
+    private suspend fun fetchFavoriteLocationWeather(): Flow<List<Weather>> {
+        return favoriteRepository
+            .getFavorites()
+            .distinctUntilChanged()
+            .filter { it is Success }
+            .mapNotNull { favoriteResponse ->
+                val list = (favoriteResponse as Success).data.mapNotNull {
+                    when (val weather = weatherRepository.getWeather(it.cityUri)) {
+                        is Success -> weather.data
+                        is Error -> null
+                    }
+                }
+                list
+            }
     }
 }

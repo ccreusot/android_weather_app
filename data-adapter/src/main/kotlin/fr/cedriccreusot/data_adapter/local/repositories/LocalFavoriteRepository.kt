@@ -11,36 +11,29 @@ import fr.cedriccreusot.domain.models.Favorite
 import fr.cedriccreusot.domain.models.Response
 import fr.cedriccreusot.domain.models.Success
 import fr.cedriccreusot.domain.repositories.FavoriteLocationRepository
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 
 class LocalFavoriteRepository(context: Context) : FavoriteLocationRepository {
     private val dataStore: DataStore<Preferences> = context.createDataStore(FAVORITES_PREFERENCES)
+    private val favoritesKey = preferencesKey<String>(FAVORITE_LIST)
 
-    override fun getFavorites(): Response<List<Favorite>> {
-        val favoritesKey = preferencesKey<String>(FAVORITE_LIST)
-        val favorites = runBlocking {
-            dataStore.data.map { preferences ->
-                val list = preferences[favoritesKey]?.split(';') ?: emptyList()
-                list.map {
-                    Favorite(it)
-                }
-            }.first()
+    override suspend fun getFavorites(): Flow<Response<List<Favorite>>> {
+        return dataStore.data.map { preferences ->
+            val list = preferences[favoritesKey]?.split(';') ?: emptyList()
+            Success(list.map {
+                Favorite(it)
+            })
         }
-        return Success(favorites)
     }
 
-    override fun saveFavorite(city: City) {
-        val favoritesKey = preferencesKey<String>(FAVORITE_LIST)
-        runBlocking {
-            dataStore.edit { preferences ->
-                val list = preferences[favoritesKey]?.split(';')?.toMutableList() ?: mutableListOf()
-                city.uri?.let {
-                    list.add(it)
-                }
-                preferences[favoritesKey] = list.joinToString(";")
+    override suspend fun saveFavorite(city: City) {
+        dataStore.edit { preferences ->
+            val list = preferences[favoritesKey]?.split(';')?.toMutableList() ?: mutableListOf()
+            city.uri?.let {
+                list.add(it)
             }
+            preferences[favoritesKey] = list.joinToString(";")
         }
     }
 }

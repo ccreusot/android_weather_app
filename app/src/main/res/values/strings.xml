@@ -6,4 +6,5 @@
     <string name="temperature" formatted="true">%d˚C</string>
     <string name="weather_location" formatted="true">%s, %s</string>
     <string name="weather_around_me">Around me</string>
+    <string name="location_permission">You need to accept the permission for the weather around you.</string>
 </resources>

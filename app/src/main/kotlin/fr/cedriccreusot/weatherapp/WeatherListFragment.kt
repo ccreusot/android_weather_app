@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import fr.cedriccreusot.weatherapp.adapters.WeatherListAdapter
 import fr.cedriccreusot.weatherapp.databinding.FragmentWeatherListBinding
@@ -38,6 +39,13 @@ class WeatherListFragment : Fragment() {
                         statusViewFlipper.displayedChild = 1
                         weatherAdapter.submitList(it.weathers)
                     }
+                    is Status.RequestPermissionStatus -> {
+                        Snackbar.make(
+                            root,
+                            getString(R.string.location_permission),
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
 
@@ -49,10 +57,5 @@ class WeatherListFragment : Fragment() {
         }
 
         return binding.get()?.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        weatherViewModel.fetchWeathers()
     }
 }

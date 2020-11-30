@@ -12,28 +12,35 @@ import fr.cedriccreusot.domain.models.Location
 import fr.cedriccreusot.domain.models.Response
 import fr.cedriccreusot.domain.models.Success
 import fr.cedriccreusot.domain.repositories.LocationRepository
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class LocalLocationRepository(private val context: Context) : LocationRepository {
     @SuppressLint("MissingPermission")
-    override fun getLocation(): Response<Location> {
-        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (!checkPermissionGranted()) {
-            return Error("Permission not granted")
-        }
-
-        val provider = locationManager.getBestProvider(
-            Criteria().apply {
-                accuracy = Criteria.ACCURACY_FINE
-                powerRequirement = Criteria.NO_REQUIREMENT
-            },
-            true
-        )
-        val location =
-            locationManager.getLastKnownLocation(provider ?: LocationManager.GPS_PROVIDER)?.let {
-                Location(it.latitude, it.longitude)
+    override fun getLocation(): Flow<Response<Location>> {
+        return flow {
+            val locationManager =
+                context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            while (!checkPermissionGranted()) {
+                emit(Error("Permission not granted"))
+                delay(1000)
             }
 
-        return if (location != null) Success(location) else Error("Location not found")
+            val provider = locationManager.getBestProvider(
+                Criteria().apply {
+                    accuracy = Criteria.ACCURACY_FINE
+                    powerRequirement = Criteria.NO_REQUIREMENT
+                },
+                true
+            )
+            val location =
+                locationManager.getLastKnownLocation(provider ?: LocationManager.GPS_PROVIDER)
+                    ?.let {
+                        Location(it.latitude, it.longitude)
+                    }
+            emit(if (location != null) Success(location) else Error("Location not found"))
+        }
     }
 
     private fun checkPermissionGranted(): Boolean =
