@@ -18,17 +18,16 @@ import kotlinx.coroutines.launch
 @FlowPreview
 class SearchCityViewModel @ViewModelInject constructor(
     private val searchUseCase: SearchCityFromListUseCase,
-    private val cityRepository: CitiesRepository,
+    cityRepository: CitiesRepository,
     private val favoriteRepository: FavoriteLocationRepository
 ) : ViewModel() {
     private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
 
     val cities: LiveData<List<City>> = searchQuery.debounce(200)
         .distinctUntilChanged()
-        .map {
-            val response = cityRepository.getCities()
-            if (response is Success) {
-                searchUseCase(it, response.data)
+        .combine(cityRepository.getCities()) { search, cities ->
+            if (cities is Success) {
+                searchUseCase(search, cities.data)
             } else {
                 emptyList()
             }
