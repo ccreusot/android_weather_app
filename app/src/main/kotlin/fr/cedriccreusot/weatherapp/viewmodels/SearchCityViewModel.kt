@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import fr.cedriccreusot.domain.models.City
-import fr.cedriccreusot.domain.models.Success
+import fr.cedriccreusot.domain.models.Response
 import fr.cedriccreusot.domain.repositories.CitiesRepository
 import fr.cedriccreusot.domain.repositories.FavoriteLocationRepository
 import fr.cedriccreusot.domain.usecases.SearchCityFromListUseCase
@@ -26,7 +26,7 @@ class SearchCityViewModel @ViewModelInject constructor(
     val cities: LiveData<List<City>> = searchQuery.debounce(200)
         .distinctUntilChanged()
         .combine(cityRepository.getCities()) { search, cities ->
-            if (cities is Success) {
+            if (cities is Response.Success) {
                 searchUseCase(search, cities.data)
             } else {
                 emptyList()

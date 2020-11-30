@@ -11,7 +11,6 @@ import com.squareup.moshi.Types
 import fr.cedriccreusot.data_adapter.models.City
 import fr.cedriccreusot.data_adapter.models.CityJsonAdapter
 import fr.cedriccreusot.domain.models.Response
-import fr.cedriccreusot.domain.models.Success
 import fr.cedriccreusot.domain.repositories.CitiesRepository
 import kotlinx.coroutines.flow.*
 
@@ -37,13 +36,13 @@ class LocalCitiesRepository(
         return flow {
             val list = loadFromCache().firstOrNull()
             if (!list.isNullOrEmpty()) {
-                emit(Success(list))
+                emit(Response.Success(list))
                 return@flow
             }
 
             networkRepository.getCities()
                 .onEach {
-                    if (it is Success) {
+                    if (it is Response.Success) {
                         saveInCache(it.data)
                     }
                 }

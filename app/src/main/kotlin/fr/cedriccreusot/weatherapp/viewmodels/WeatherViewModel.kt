@@ -5,8 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import fr.cedriccreusot.domain.models.Error
-import fr.cedriccreusot.domain.models.Success
+import fr.cedriccreusot.domain.models.Response
 import fr.cedriccreusot.domain.models.Weather
 import fr.cedriccreusot.domain.repositories.FavoriteLocationRepository
 import fr.cedriccreusot.domain.repositories.LocationRepository
@@ -55,16 +54,16 @@ class WeatherViewModel @ViewModelInject constructor(
         return locationRepository.getLocation()
             .distinctUntilChanged()
             .map { locationResponse ->
-                if (locationResponse is Error) {
+                if (locationResponse is Response.Error) {
                     weathersStatus.postValue(Status.RequestPermissionStatus)
                     delay(500)
                     return@map null
                 }
 
                 when (val weatherResponse =
-                    weatherRepository.getWeather((locationResponse as Success).data)) {
-                    is Success -> weatherResponse.data
-                    is Error -> null
+                    weatherRepository.getWeather((locationResponse as Response.Success).data)) {
+                    is Response.Success -> weatherResponse.data
+                    is Response.Error -> null
                 }
             }
     }
@@ -73,12 +72,12 @@ class WeatherViewModel @ViewModelInject constructor(
         return favoriteRepository
             .getFavorites()
             .distinctUntilChanged()
-            .filter { it is Success }
+            .filter { it is Response.Success }
             .mapNotNull { favoriteResponse ->
-                val list = (favoriteResponse as Success).data.mapNotNull {
+                val list = (favoriteResponse as Response.Success).data.mapNotNull {
                     when (val weather = weatherRepository.getWeather(it.cityUri)) {
-                        is Success -> weather.data
-                        is Error -> null
+                        is Response.Success -> weather.data
+                        is Response.Error -> null
                     }
                 }
                 list

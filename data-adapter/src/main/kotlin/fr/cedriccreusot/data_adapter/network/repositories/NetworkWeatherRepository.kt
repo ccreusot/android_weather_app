@@ -1,7 +1,10 @@
 package fr.cedriccreusot.data_adapter.network.repositories
 
 import fr.cedriccreusot.data_adapter.network.WeatherService
-import fr.cedriccreusot.domain.models.*
+import fr.cedriccreusot.domain.models.City
+import fr.cedriccreusot.domain.models.Location
+import fr.cedriccreusot.domain.models.Response
+import fr.cedriccreusot.domain.models.Weather
 import fr.cedriccreusot.domain.repositories.WeatherRepository
 
 class NetworkWeatherRepository(private val service: WeatherService) : WeatherRepository {
@@ -9,7 +12,7 @@ class NetworkWeatherRepository(private val service: WeatherService) : WeatherRep
         runCatching {
             service.getCityWeather(city).execute().body()!!
         }.onSuccess {
-            return Success(
+            return Response.Success(
                 Weather(
                     date = it.currentCondition?.date?.split('.')?.reversed()?.joinToString("-") ?: "",
                     currentTemperature = it.currentCondition?.tmp ?: 0,
@@ -27,16 +30,16 @@ class NetworkWeatherRepository(private val service: WeatherService) : WeatherRep
                 )
             )
         }.onFailure {
-            return Error("Something went wrong")
+            return Response.Error("Something went wrong")
         }
-        return Error("Something went wrong")
+        return Response.Error("Something went wrong")
     }
 
     override fun getWeather(location: Location): Response<Weather> {
         runCatching {
             service.getLocalWeather(location.latitude, location.longitude).execute().body()!!
         }.onSuccess {
-            return Success(
+            return Response.Success(
                 Weather(
                     date = it.currentCondition?.date?.split('.')?.reversed()?.joinToString("-") ?: "",
                     currentTemperature = it.currentCondition?.tmp ?: 0,
@@ -48,8 +51,8 @@ class NetworkWeatherRepository(private val service: WeatherService) : WeatherRep
                 )
             )
         }.onFailure {
-            return Error("Something went wrong")
+            return Response.Error("Something went wrong")
         }
-        return Error("Something went wrong")
+        return Response.Error("Something went wrong")
     }
 }

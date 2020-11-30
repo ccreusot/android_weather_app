@@ -7,10 +7,8 @@ import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
-import fr.cedriccreusot.domain.models.Error
 import fr.cedriccreusot.domain.models.Location
 import fr.cedriccreusot.domain.models.Response
-import fr.cedriccreusot.domain.models.Success
 import fr.cedriccreusot.domain.repositories.LocationRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +21,7 @@ class LocalLocationRepository(private val context: Context) : LocationRepository
             val locationManager =
                 context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             while (!checkPermissionGranted()) {
-                emit(Error("Permission not granted"))
+                emit(Response.Error("Permission not granted"))
                 delay(1000)
             }
 
@@ -39,7 +37,7 @@ class LocalLocationRepository(private val context: Context) : LocationRepository
                     ?.let {
                         Location(it.latitude, it.longitude)
                     }
-            emit(if (location != null) Success(location) else Error("Location not found"))
+            emit(if (location != null) Response.Success(location) else Response.Error("Location not found"))
         }
     }
 

@@ -9,7 +9,6 @@ import androidx.datastore.preferences.createDataStore
 import fr.cedriccreusot.domain.models.City
 import fr.cedriccreusot.domain.models.Favorite
 import fr.cedriccreusot.domain.models.Response
-import fr.cedriccreusot.domain.models.Success
 import fr.cedriccreusot.domain.repositories.FavoriteLocationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -21,7 +20,7 @@ class LocalFavoriteRepository(context: Context) : FavoriteLocationRepository {
     override suspend fun getFavorites(): Flow<Response<List<Favorite>>> {
         return dataStore.data.map { preferences ->
             val list = preferences[favoritesKey]?.split(';') ?: emptyList()
-            Success(list.map {
+            Response.Success(list.map {
                 Favorite(it)
             })
         }
