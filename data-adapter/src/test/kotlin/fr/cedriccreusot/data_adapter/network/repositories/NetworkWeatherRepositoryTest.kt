@@ -6,9 +6,8 @@ import fr.cedriccreusot.data_adapter.JsonFileUtils
 import fr.cedriccreusot.data_adapter.WeatherServiceMocks
 import fr.cedriccreusot.data_adapter.models.*
 import fr.cedriccreusot.domain.models.City
-import fr.cedriccreusot.domain.models.Error
 import fr.cedriccreusot.domain.models.Location
-import fr.cedriccreusot.domain.models.Success
+import fr.cedriccreusot.domain.models.Response
 import org.amshove.kluent.`should be equal to`
 import org.junit.Test
 
@@ -24,7 +23,7 @@ class NetworkWeatherRepositoryTest {
 
         val result = repository.getWeather("city")
 
-        result `should be equal to` Error("Something went wrong")
+        result `should be equal to` Response.Error("Something went wrong")
     }
 
     @Test
@@ -35,7 +34,7 @@ class NetworkWeatherRepositoryTest {
 
         val result = repository.getWeather(Location(0.2222, 2.3333))
 
-        result `should be equal to` Error("Something went wrong")
+        result `should be equal to` Response.Error("Something went wrong")
     }
 
     @Test
@@ -61,7 +60,7 @@ class NetworkWeatherRepositoryTest {
 
         val result = repository.getWeather(Location(0.2222, 2.33333))
 
-        result `should be equal to` Success(
+        result `should be equal to` Response.Success(
             DomainWeather(
                 date = "2020-11-29",
                 currentTemperature = 0,
@@ -97,7 +96,7 @@ class NetworkWeatherRepositoryTest {
 
         val result = repository.getWeather("paris")
 
-        result `should be equal to` Success(
+        result `should be equal to` Response.Success(
             DomainWeather(
                 date = "2020-11-29",
                 currentTemperature = 6,

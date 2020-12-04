@@ -7,8 +7,7 @@ import fr.cedriccreusot.data_adapter.JsonFileUtils
 import fr.cedriccreusot.data_adapter.WeatherServiceMocks
 import fr.cedriccreusot.data_adapter.models.City
 import fr.cedriccreusot.data_adapter.models.CityJsonAdapter
-import fr.cedriccreusot.domain.models.Error
-import fr.cedriccreusot.domain.models.Success
+import fr.cedriccreusot.domain.models.Response
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.runBlockingTest
@@ -28,7 +27,7 @@ class NetworkCitiesRepositoryTest {
         val repository = NetworkCitiesRepository(service)
 
         repository.getCities().collect {
-            it `should be equal to` Error<List<City>>("Something went wrong")
+            it `should be equal to` Response.Error<List<City>>("Something went wrong")
         }
 
     }
@@ -45,29 +44,31 @@ class NetworkCitiesRepositoryTest {
         val repository = NetworkCitiesRepository(service)
 
         repository.getCities().collect {
-            it `should be equal to` Success(listOf(
-                DomainCity(
-                    name = "Aaigem",
-                    zipCode = "9420",
-                    country = null,
-                    countryCode = "BEL",
-                    uri = "aaigem"
-                ),
-                DomainCity(
-                    name = "Aalbeke",
-                    zipCode = "8511",
-                    country = null,
-                    countryCode = "BEL",
-                    uri = "aalbeke"
-                ),
-                DomainCity(
-                    name = "Aalst",
-                    zipCode = "9300",
-                    country = null,
-                    countryCode = "BEL",
-                    uri = "aalst"
+            it `should be equal to` Response.Success(
+                listOf(
+                    DomainCity(
+                        name = "Aaigem",
+                        zipCode = "9420",
+                        country = null,
+                        countryCode = "BEL",
+                        uri = "aaigem"
+                    ),
+                    DomainCity(
+                        name = "Aalbeke",
+                        zipCode = "8511",
+                        country = null,
+                        countryCode = "BEL",
+                        uri = "aalbeke"
+                    ),
+                    DomainCity(
+                        name = "Aalst",
+                        zipCode = "9300",
+                        country = null,
+                        countryCode = "BEL",
+                        uri = "aalst"
+                    )
                 )
-            ))
+            )
         }
     }
 }
